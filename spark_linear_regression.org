@@ -28,9 +28,71 @@ Once you've created the model and tested it for a quick check on how well you ca
 ** Approach for solving
 The approach for solving the problem would be the following:
 1. Understand the data
-   #+BEGIN_SRC python
+   #+BEGIN_SRC python :dir Linear_Regression :python /home/selver/.virtualenvs/pyspark/bin/python :export both :results output
    from pyspark.sql import SparkSession
    spark = SparkSession.builder.appName('hyundai').getOrCreate()
+   df = spark.read.csv('cruise_ship_info.csv', inferSchema=True, header=True)
+   df.show()
+   #+END_SRC
+
+   #+RESULTS:
+   #+begin_example
+   +-----------+-----------+---+------------------+----------+------+------+-----------------+----+
+   |  Ship_name|Cruise_line|Age|           Tonnage|passengers|length|cabins|passenger_density|crew|
+   +-----------+-----------+---+------------------+----------+------+------+-----------------+----+
+   |    Journey|    Azamara|  6|30.276999999999997|      6.94|  5.94|  3.55|            42.64|3.55|
+   |      Quest|    Azamara|  6|30.276999999999997|      6.94|  5.94|  3.55|            42.64|3.55|
+   |Celebration|   Carnival| 26|            47.262|     14.86|  7.22|  7.43|             31.8| 6.7|
+   |   Conquest|   Carnival| 11|             110.0|     29.74|  9.53| 14.88|            36.99|19.1|
+   |    Destiny|   Carnival| 17|           101.353|     26.42|  8.92| 13.21|            38.36|10.0|
+   |    Ecstasy|   Carnival| 22|            70.367|     20.52|  8.55|  10.2|            34.29| 9.2|
+   |    Elation|   Carnival| 15|            70.367|     20.52|  8.55|  10.2|            34.29| 9.2|
+   |    Fantasy|   Carnival| 23|            70.367|     20.56|  8.55| 10.22|            34.23| 9.2|
+   |Fascination|   Carnival| 19|            70.367|     20.52|  8.55|  10.2|            34.29| 9.2|
+   |    Freedom|   Carnival|  6|110.23899999999999|      37.0|  9.51| 14.87|            29.79|11.5|
+   |      Glory|   Carnival| 10|             110.0|     29.74|  9.51| 14.87|            36.99|11.6|
+   |    Holiday|   Carnival| 28|            46.052|     14.52|  7.27|  7.26|            31.72| 6.6|
+   |Imagination|   Carnival| 18|            70.367|     20.52|  8.55|  10.2|            34.29| 9.2|
+   |Inspiration|   Carnival| 17|            70.367|     20.52|  8.55|  10.2|            34.29| 9.2|
+   |     Legend|   Carnival| 11|              86.0|     21.24|  9.63| 10.62|            40.49| 9.3|
+   |   Liberty*|   Carnival|  8|             110.0|     29.74|  9.51| 14.87|            36.99|11.6|
+   |    Miracle|   Carnival|  9|              88.5|     21.24|  9.63| 10.62|            41.67|10.3|
+   |   Paradise|   Carnival| 15|            70.367|     20.52|  8.55|  10.2|            34.29| 9.2|
+   |      Pride|   Carnival| 12|              88.5|     21.24|  9.63| 11.62|            41.67| 9.3|
+   |  Sensation|   Carnival| 20|            70.367|     20.52|  8.55|  10.2|            34.29| 9.2|
+   +-----------+-----------+---+------------------+----------+------+------+-----------------+----+
+   only showing top 20 rows
+
+   #+end_example
+
+   Since this sentence /The client also mentioned that they have found that particular cruise lines will differ in acceptable crew counts/ it makes sense to look at the cruise lines in more detail.
+   #+BEGIN_SRC python
+   df.select("Cruise_line").distinct().show()
+   +-----------------+
+   |      Cruise_line|
+   +-----------------+
+   |            Costa|
+   |              P&O|
+   |           Cunard|
+   |Regent_Seven_Seas|
+   |              MSC|
+   |         Carnival|
+   |          Crystal|
+   |           Orient|
+   |         Princess|
+   |        Silversea|
+   |         Seabourn|
+   | Holland_American|
+   |         Windstar|
+   |           Disney|
+   |        Norwegian|
+   |          Oceania|
+   |          Azamara|
+   |        Celebrity|
+   |             Star|
+   |  Royal_Caribbean|
+   +-----------------+
+
    #+END_SRC
    1. Shape
    2. Size
@@ -45,3 +107,4 @@ The approach for solving the problem would be the following:
 5. Fit the model with test data
 6. Evaluate all necessary metrics to see how good the model is
 7. Test on predicting new values
+   
