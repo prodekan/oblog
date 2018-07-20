@@ -1,0 +1,146 @@
+openapi: "3.0.0"
+
+info:
+  version: "1.0"
+  title: HR API
+  description: "HR API"
+  contact:
+    name: selver.basic
+    url: selver.basic@eon.com
+
+servers:
+  - url: http://localhost:5000
+    description: Localhost server
+
+paths:
+  /api/v1/employee:
+    post:
+      tags:
+      - "employee"
+      summary: Add employee
+      description: ""
+      operationId: postEmployee
+      parameters:
+        - $ref: "#/components/parameters/name"
+        - $ref: "#/components/parameters/age"
+        - $ref: "#/components/parameters/department"
+        - $ref: "#/components/parameters/salary"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200'
+  /api/v1/employee/{name}:
+    delete:
+      tags:
+        - "employee"
+      description: deletes a single empl
+      summary: Remove employee
+      operationId: deleteEmployee
+      parameters:
+        - name: name
+          in: path
+          description: name of employee
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: deleted
+
+    get:
+      tags:
+      - "employee"
+      summary: See employee
+      description: ""
+      operationId: getEmployee
+      parameters:
+        -
+          in: path
+          name: name
+          required: true
+          schema:
+            type: "string"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200'
+
+components:
+  schemas:
+    200:
+      title: HTTP 200
+      type: object
+      properties:
+        message:
+          type: string
+
+    employee-200:
+      title: HTTP 200 employee
+      type: object
+      properties:
+        name:
+          type: "string"
+          format: "int32"
+        message:
+          type: "string"
+
+    Message:
+      title: Response message
+      type: string
+
+    fullemployee:
+      title: fullemployee
+      type: object
+      properties:
+        name:
+          $ref: "#/components/parameters/name"
+        age:
+          $ref: "#/components/parameters/age"
+        department:
+          $ref: "#/components/parameters/department"
+        salaray:
+          $ref: "#/components/parameters/salary"
+
+
+  parameters:
+    name:
+      name: name
+      in: query
+      description: "Name"
+      required: true
+      schema:
+        type: string
+      example: "Mickey"
+    age:
+      name: age
+      in: query
+      description: "Age"
+      required: true
+      schema:
+        type: number
+        format: float
+      example: "25"
+    department:
+      name: department
+      in: query
+      description: "Department"
+      required: true
+      schema:
+        type: "string"
+        enum: ["MI5.5","MI6.5", "Queen"]
+      example: "MI5.5"
+    salary:
+      name: salary
+      in: query
+      description: "Salary"
+      required: true
+      schema:
+        type: number
+        format: float
+      example: 100000
