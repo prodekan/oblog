@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Spark Linear Regression - testing</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">Spark Linear Regression - testing</h1>
+</header>
+<h1 id="problem-statement">Problem statement</h1>
+<p>This problem statement is from the Udemy course on pyspark. You've been contracted by Hyundai Heavy Industries to help them build a predictive model for some ships. Hyundai Heavy Industries is one of the world's largest ship manufacturing companies and builds cruise liners. You've been flown to their headquarters in Ulsan, South Korea to help them give accurate estimates of how many crew members a ship will require. They are currently building new ships for some customers and want you to create a model and use it to predict how many crew members the ships will need. Here is what the data looks like so far: Description: Measurements of ship size, capacity, crew, and age for 158 cruise ships.</p>
+<pre class="example"><code>Variables/Columns
+Ship Name     1-20
+Cruise Line   21-40
+Age (as of 2013)   46-48
+Tonnage (1000s of tons)   50-56
+passengers (100s)   58-64
+Length (100s of feet)  66-72
+Cabins  (100s)   74-80
+Passenger Density   82-88
+Crew  (100s)   90-96
+</code></pre>
+<p>It is saved in a csv file for you called <code>cruise_ship_info.csv</code>. Your job is to <strong>create a regression model</strong> that will help predict <strong>how many crew members will be needed for future ships</strong>. The client also mentioned that they have found that particular cruise lines will differ in acceptable crew counts, so it is most likely an important feature to include in your analysis! Once you've created the model and tested it for a quick check on how well you can expect it to perform, make sure you take a look at why it performs so well!</p>
+<h1 id="approach-for-solving">Approach for solving</h1>
+<p>The approach for solving the problem would be the following:</p>
+<ol>
+<li><p>Understand the data</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> pyspark.sql <span class="im">import</span> SparkSession
+spark <span class="op">=</span> SparkSession.builder.appName(<span class="st">&#39;hyundai&#39;</span>).getOrCreate()
+df <span class="op">=</span> spark.read.csv(<span class="st">&#39;cruise_ship_info.csv&#39;</span>, inferSchema<span class="op">=</span><span class="va">True</span>, header<span class="op">=</span><span class="va">True</span>)
+df.show()</code></pre></div>
+<p>Since this sentence <em>The client also mentioned that they have found that particular cruise lines will differ in acceptable crew counts</em> it makes sense to look at the cruise lines in more detail.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">df.select(<span class="st">&quot;Cruise_line&quot;</span>).distinct().show()
+<span class="op">+-----------------+</span>
+<span class="op">|</span>      Cruise_line<span class="op">|</span>
+<span class="op">+-----------------+</span>
+<span class="op">|</span>            Costa<span class="op">|</span>
+<span class="op">|</span>              P<span class="op">&amp;</span>O<span class="op">|</span>
+<span class="op">|</span>           Cunard<span class="op">|</span>
+<span class="op">|</span>Regent_Seven_Seas<span class="op">|</span>
+<span class="op">|</span>              MSC<span class="op">|</span>
+<span class="op">|</span>         Carnival<span class="op">|</span>
+<span class="op">|</span>          Crystal<span class="op">|</span>
+<span class="op">|</span>           Orient<span class="op">|</span>
+<span class="op">|</span>         Princess<span class="op">|</span>
+<span class="op">|</span>        Silversea<span class="op">|</span>
+<span class="op">|</span>         Seabourn<span class="op">|</span>
+<span class="op">|</span> Holland_American<span class="op">|</span>
+<span class="op">|</span>         Windstar<span class="op">|</span>
+<span class="op">|</span>           Disney<span class="op">|</span>
+<span class="op">|</span>        Norwegian<span class="op">|</span>
+<span class="op">|</span>          Oceania<span class="op">|</span>
+<span class="op">|</span>          Azamara<span class="op">|</span>
+<span class="op">|</span>        Celebrity<span class="op">|</span>
+<span class="op">|</span>             Star<span class="op">|</span>
+<span class="op">|</span>  Royal_Caribbean<span class="op">|</span>
+<span class="op">+-----------------+</span></code></pre></div>
+<ol>
+<li>Shape</li>
+<li>Size</li>
+<li>Columns</li>
+<li>Types of colums</li>
+<li>Range of numeric types</li>
+<li>Redundancy</li>
+<li>Relationship between columns</li>
+</ol></li>
+<li>Transform the data to fit the spark linear regression model creation function</li>
+<li>Split the data into a training and test set on a ration 70 to 30</li>
+<li>Create the model using the training data</li>
+<li>Fit the model with test data</li>
+<li>Evaluate all necessary metrics to see how good the model is</li>
+<li><p>Test on predicting new values</p></li>
+</ol>
+</body>
+</html>
