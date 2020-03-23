@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "GetActiveWatermark",
+				"name": "GetAllTables",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -35,7 +35,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "GetActiveWatermark",
+						"activity": "GetAllTables",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -44,7 +44,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('GetActiveWatermark').output",
+						"value": "@activity('GetAllTables').output.value",
 						"type": "Expression"
 					},
 					"isSequential": true,
