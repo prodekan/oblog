@@ -43,7 +43,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('GetActiveWatermark').output.table",
+						"value": "@activity('GetActiveWatermark').output",
 						"type": "Expression"
 					},
 					"isSequential": true,
