@@ -26,7 +26,8 @@
 					"dataset": {
 						"referenceName": "DSIMConfig",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
